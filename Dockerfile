@@ -62,7 +62,6 @@ RUN apt-get update \
         zip \
     && pecl install imagick \
     && docker-php-ext-enable imagick \
-    && apt-get purge -y --auto-remove libmagickwand-dev \
     && rm -rf /var/lib/apt/lists/* /tmp/pear
 
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/99-openlskypro.ini
