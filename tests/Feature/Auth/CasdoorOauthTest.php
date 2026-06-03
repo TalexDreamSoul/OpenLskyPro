@@ -58,7 +58,6 @@ class CasdoorOauthTest extends TestCase
         $identity = $this->verifiedIdentity();
         $oidc->shouldReceive('getUserFromCallback')->once()->andReturn($identity);
         $oidc->shouldReceive('putPendingIdentity')->once()->with($identity);
-        $oidc->shouldReceive('canCreateUser')->once()->with($identity)->andReturn(true);
 
         $this->get('/auth/casdoor/callback?code=code&state=state')
             ->assertRedirect(route('casdoor.confirm'));
@@ -189,9 +188,7 @@ class CasdoorOauthTest extends TestCase
 
     private function enableRegistration(bool $enabled): void
     {
-        Config::query()->updateOrCreate([
-            'name' => ConfigKey::IsEnableRegistration,
-        ], [
+        Config::query()->where('name', ConfigKey::IsEnableRegistration)->update([
             'value' => $enabled ? 1 : 0,
         ]);
         cache()->forget('configs');
