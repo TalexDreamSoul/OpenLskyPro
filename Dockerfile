@@ -17,6 +17,8 @@ RUN composer install \
     --prefer-dist \
     --optimize-autoloader \
     --no-scripts \
+    --ignore-platform-req=php \
+    --ignore-platform-req=ext-ftp \
     --ignore-platform-req=ext-imagick
 COPY . .
 RUN composer dump-autoload --optimize --no-dev
@@ -46,6 +48,7 @@ RUN apt-get update \
         ctype \
         dom \
         fileinfo \
+        ftp \
         gd \
         mbstring \
         opcache \
