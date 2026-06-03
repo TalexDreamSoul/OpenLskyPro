@@ -8,8 +8,13 @@ COPY resources ./resources
 COPY webpack.mix.js tailwind.config.js ./
 RUN npm run production
 
-FROM composer:2 AS vendor
+FROM php:8.1-cli-bookworm AS vendor
 WORKDIR /app
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git unzip libzip-dev \
+    && docker-php-ext-install -j"$(nproc)" ftp zip \
+    && rm -rf /var/lib/apt/lists/*
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 COPY composer.json composer.lock ./
 RUN composer install \
     --no-dev \
@@ -17,11 +22,9 @@ RUN composer install \
     --prefer-dist \
     --optimize-autoloader \
     --no-scripts \
-    --ignore-platform-req=php \
-    --ignore-platform-req=ext-ftp \
     --ignore-platform-req=ext-imagick
 COPY . .
-RUN composer dump-autoload --optimize --no-dev
+RUN COMPOSER_ALLOW_SUPERUSER=1 composer dump-autoload --optimize --no-dev --no-scripts
 
 FROM php:8.1-fpm-bookworm AS app
 WORKDIR /var/www/html
