@@ -11,7 +11,7 @@ RUN npm run production
 FROM php:8.1-cli-bookworm AS vendor
 WORKDIR /app
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends git unzip libzip-dev \
+    && apt-get install -y --no-install-recommends git unzip libssl-dev libzip-dev \
     && docker-php-ext-install -j"$(nproc)" ftp zip \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
