@@ -45,6 +45,7 @@ RUN apt-get update \
         libmagickwand-dev \
         libxml2-dev \
         libonig-dev \
+        libpq-dev \
         libcurl4-openssl-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install -j"$(nproc)" \
