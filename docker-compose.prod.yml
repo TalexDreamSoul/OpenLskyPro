@@ -18,6 +18,7 @@ services:
       - "${HTTP_PORT:-8080}:80"
     volumes:
       - ./.env:/var/www/html/.env:ro
+      - ./installed.lock:/var/www/html/installed.lock
       - openlskypro_storage:/var/www/html/storage
       - openlskypro_cache:/var/www/html/bootstrap/cache
     healthcheck:
