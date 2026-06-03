@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\CasdoorController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
@@ -26,6 +27,26 @@ Route::get('/login', [
 Route::post('/login', [
     AuthenticatedSessionController::class, 'store'
 ])->middleware('guest');
+
+Route::get('/auth/casdoor/redirect', [
+    CasdoorController::class, 'redirect',
+])->middleware('guest')->name('casdoor.redirect');
+
+Route::get('/auth/casdoor/callback', [
+    CasdoorController::class, 'callback',
+])->middleware('guest')->name('casdoor.callback');
+
+Route::get('/auth/casdoor/confirm', [
+    CasdoorController::class, 'confirm',
+])->middleware('guest')->name('casdoor.confirm');
+
+Route::post('/auth/casdoor/create', [
+    CasdoorController::class, 'create',
+])->middleware('guest')->name('casdoor.create');
+
+Route::post('/auth/casdoor/bind', [
+    CasdoorController::class, 'bind',
+])->middleware('guest')->name('casdoor.bind');
 
 Route::get('/forgot-password', [
     PasswordResetLinkController::class, 'create',

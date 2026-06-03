@@ -1,0 +1,31 @@
+services:
+  openlskypro:
+    image: ${OPENLSKYPRO_IMAGE:-ghcr.io/talexdreamsoul/openlskypro:master}
+    container_name: openlskypro
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      LOG_CHANNEL: ${LOG_CHANNEL:-daily}
+      CACHE_DRIVER: ${CACHE_DRIVER:-file}
+      SESSION_DRIVER: ${SESSION_DRIVER:-file}
+      QUEUE_CONNECTION: ${QUEUE_CONNECTION:-sync}
+      FILESYSTEM_DISK: ${FILESYSTEM_DISK:-public}
+      LARAVEL_OPTIMIZE: ${LARAVEL_OPTIMIZE:-true}
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+    volumes:
+      - openlskypro_storage:/var/www/html/storage
+      - openlskypro_cache:/var/www/html/bootstrap/cache
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1/healthz || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  openlskypro_storage:
+  openlskypro_cache:
