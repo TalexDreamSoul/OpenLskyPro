@@ -37,6 +37,7 @@ RUN apt-get update \
         git \
         unzip \
         libzip-dev \
+        libssl-dev \
         libpng-dev \
         libjpeg62-turbo-dev \
         libfreetype6-dev \
