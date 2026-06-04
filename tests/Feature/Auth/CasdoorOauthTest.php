@@ -8,6 +8,7 @@ use App\Models\OauthIdentity;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use App\Services\CasdoorOidcService;
+use App\Utils;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -85,11 +86,11 @@ class CasdoorOauthTest extends TestCase
             ],
         ])->assertOk();
 
-        $this->actingAs($admin)->get(route('admin.settings'))
-            ->assertOk()
-            ->assertSee('https://auth.tagzxia.com')
-            ->assertSee('tagzxia-client')
-            ->assertSee('https://img.wc1.tagzxia.com/auth/casdoor/callback');
+        $settings = Utils::config(ConfigKey::Casdoor);
+        $this->assertTrue($settings->get('enabled'));
+        $this->assertSame('https://auth.tagzxia.com', $settings->get('issuer'));
+        $this->assertSame('tagzxia-client', $settings->get('client_id'));
+        $this->assertSame('https://img.wc1.tagzxia.com/auth/casdoor/callback', $settings->get('redirect'));
     }
 
     public function test_blank_casdoor_secret_keeps_existing_secret()
