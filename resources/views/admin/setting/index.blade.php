@@ -74,10 +74,16 @@
                 <div>
                     <label for="casdoor[client_id]" class="block text-sm font-medium text-gray-700">Client ID</label>
                     <x-input type="text" name="casdoor[client_id]" id="casdoor[client_id]" value="{{ $configs['casdoor']['client_id'] ?? '' }}" placeholder="请输入 Casdoor 应用 Client ID"/>
+                    <p class="text-xs mt-1 {{ empty($configs['casdoor']['client_id'] ?? '') ? 'text-yellow-600' : 'text-green-600' }}">
+                        {{ empty($configs['casdoor']['client_id'] ?? '') ? '未配置 Client ID。' : 'Client ID 已保存。' }}
+                    </p>
                 </div>
                 <div>
                     <label for="casdoor[client_secret]" class="block text-sm font-medium text-gray-700">Client Secret</label>
                     <x-input type="password" name="casdoor[client_secret]" id="casdoor[client_secret]" value="" placeholder="{{ empty($configs['casdoor']['client_secret'] ?? '') ? '请输入 Casdoor 应用 Client Secret' : '已配置；留空则不修改' }}"/>
+                    <p class="text-xs mt-1 {{ empty($configs['casdoor']['client_secret'] ?? '') ? 'text-yellow-600' : 'text-green-600' }}">
+                        {{ empty($configs['casdoor']['client_secret'] ?? '') ? '未配置 Client Secret。' : 'Client Secret 已保存；为安全起见不会回显明文，留空保存不会覆盖。' }}
+                    </p>
                 </div>
                 <div>
                     <label for="casdoor[redirect]" class="block text-sm font-medium text-gray-700">Redirect URI</label>
