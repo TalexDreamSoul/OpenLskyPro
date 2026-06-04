@@ -77,7 +77,7 @@
                 </div>
                 <div>
                     <label for="casdoor[client_secret]" class="block text-sm font-medium text-gray-700">Client Secret</label>
-                    <x-input type="password" name="casdoor[client_secret]" id="casdoor[client_secret]" value="{{ $configs['casdoor']['client_secret'] ?? '' }}" placeholder="请输入 Casdoor 应用 Client Secret"/>
+                    <x-input type="password" name="casdoor[client_secret]" id="casdoor[client_secret]" value="" placeholder="{{ empty($configs['casdoor']['client_secret'] ?? '') ? '请输入 Casdoor 应用 Client Secret' : '已配置；留空则不修改' }}"/>
                 </div>
                 <div>
                     <label for="casdoor[redirect]" class="block text-sm font-medium text-gray-700">Redirect URI</label>

@@ -25,6 +25,10 @@ class SettingController extends Controller
     public function save(Request $request): Response
     {
         foreach ($request->all() as $key => $value) {
+            if ($key === ConfigKey::Casdoor && is_array($value)) {
+                $value = $this->normalizeCasdoorConfig($value);
+            }
+
             DB::table('configs')->updateOrInsert(
                 ['name' => $key],
                 [
@@ -34,8 +38,31 @@ class SettingController extends Controller
                 ]
             );
         }
+        Cache::forget('configs');
         Cache::flush();
         return $this->success('保存成功');
+    }
+
+    private function normalizeCasdoorConfig(array $config): array
+    {
+        $current = json_decode((string) DB::table('configs')->where('name', ConfigKey::Casdoor)->value('value'), true) ?: [];
+        $defaults = config('convention.app.'.ConfigKey::Casdoor, []);
+        $config = array_merge($defaults, $current, $config);
+
+        $config['enabled'] = filter_var($config['enabled'] ?? false, FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
+        $config['issuer'] = rtrim((string) ($config['issuer'] ?? ''), '/');
+        $config['client_id'] = (string) ($config['client_id'] ?? '');
+        $config['redirect'] = (string) ($config['redirect'] ?? '');
+        $config['scope'] = trim((string) ($config['scope'] ?? '')) ?: 'openid profile email';
+        $config['pending_ttl'] = max(1, (int) ($config['pending_ttl'] ?? 10));
+
+        if (($config['client_secret'] ?? '') === '') {
+            $config['client_secret'] = $current['client_secret'] ?? '';
+        } else {
+            $config['client_secret'] = (string) $config['client_secret'];
+        }
+
+        return $config;
     }
 
     public function mailTest(Request $request): Response

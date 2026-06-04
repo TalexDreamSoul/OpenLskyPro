@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use App\Services\CasdoorOidcService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -42,7 +43,7 @@ class CasdoorOauthTest extends TestCase
         $this->actingAs($admin)->put(route('admin.settings.save'), [
             'casdoor' => [
                 'enabled' => '1',
-                'issuer' => 'https://casdoor.example.com',
+                'issuer' => 'https://casdoor.example.com/',
                 'client_id' => 'client-id',
                 'client_secret' => 'client-secret',
                 'redirect' => 'https://open.example.com/auth/casdoor/callback',
@@ -57,11 +58,59 @@ class CasdoorOauthTest extends TestCase
         ]);
 
         $settings = json_decode(Config::query()->where('name', ConfigKey::Casdoor)->value('value'), true);
-        $this->assertSame('1', $settings['enabled']);
+        $this->assertSame(1, $settings['enabled']);
         $this->assertSame('https://casdoor.example.com', $settings['issuer']);
         $this->assertSame('client-id', $settings['client_id']);
         $this->assertSame('client-secret', $settings['client_secret']);
         $this->assertSame('https://open.example.com/auth/casdoor/callback', $settings['redirect']);
+        $this->assertSame(15, $settings['pending_ttl']);
+    }
+
+    public function test_admin_save_casdoor_settings_invalidates_cached_config()
+    {
+        $admin = User::factory()->create(['is_adminer' => true]);
+        Cache::forever('configs', collect([
+            ConfigKey::Casdoor => collect(config('convention.app.'.ConfigKey::Casdoor)),
+        ]));
+
+        $this->actingAs($admin)->put(route('admin.settings.save'), [
+            'casdoor' => [
+                'enabled' => '1',
+                'issuer' => 'https://auth.tagzxia.com',
+                'client_id' => 'tagzxia-client',
+                'client_secret' => 'tagzxia-secret',
+                'redirect' => 'https://img.wc1.tagzxia.com/auth/casdoor/callback',
+                'scope' => 'openid profile email',
+                'pending_ttl' => '10',
+            ],
+        ])->assertOk();
+
+        $this->actingAs($admin)->get(route('admin.settings'))
+            ->assertOk()
+            ->assertSee('https://auth.tagzxia.com')
+            ->assertSee('tagzxia-client')
+            ->assertSee('https://img.wc1.tagzxia.com/auth/casdoor/callback');
+    }
+
+    public function test_blank_casdoor_secret_keeps_existing_secret()
+    {
+        $admin = User::factory()->create(['is_adminer' => true]);
+        $this->saveCasdoorSettings(['client_secret' => 'existing-secret']);
+
+        $this->actingAs($admin)->put(route('admin.settings.save'), [
+            'casdoor' => [
+                'enabled' => '1',
+                'issuer' => 'https://casdoor.example.com',
+                'client_id' => 'client-id',
+                'client_secret' => '',
+                'redirect' => 'https://open.example.com/auth/casdoor/callback',
+                'scope' => 'openid profile email',
+                'pending_ttl' => '15',
+            ],
+        ])->assertOk();
+
+        $settings = json_decode(Config::query()->where('name', ConfigKey::Casdoor)->value('value'), true);
+        $this->assertSame('existing-secret', $settings['client_secret']);
     }
 
     public function test_bound_casdoor_identity_can_login_directly()
