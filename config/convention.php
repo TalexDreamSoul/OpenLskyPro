@@ -17,10 +17,10 @@ use App\Enums\Watermark\Mode;
 
 return [
     'app' => [
-        ConfigKey::AppName => 'Lsky Pro',
+        ConfigKey::AppName => 'OpenLskyPro',
         ConfigKey::AppVersion => 'V 2.1',
-        ConfigKey::SiteKeywords => 'Lsky Pro,lsky,兰空图床',
-        ConfigKey::SiteDescription => 'Lsky Pro, Your photo album on the cloud.',
+        ConfigKey::SiteKeywords => 'OpenLskyPro,图床,图片托管',
+        ConfigKey::SiteDescription => 'OpenLskyPro, powered by TaGzxia.',
         ConfigKey::SiteNotice => '',
         ConfigKey::IcpNo => '',
         ConfigKey::IsEnableRegistration => 1,
@@ -80,7 +80,7 @@ return [
             'driver' => 'font',
             'drivers' => [
                 'font' => [
-                    FontOption::Text => 'Lsky Pro',
+                    FontOption::Text => 'OpenLskyPro',
                     FontOption::Position => 'bottom-right',
                     FontOption::Angle => 0,
                     FontOption::Size => 50,

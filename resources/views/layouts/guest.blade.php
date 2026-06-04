@@ -19,8 +19,13 @@
         <link rel="stylesheet" href="{{ asset('css/app.css') }}?t=20220817">
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen text-gray-900 bg-gray-100">
-            {{ $slot }}
+        <div class="min-h-screen text-gray-900 bg-gray-100 flex flex-col">
+            <main class="flex-1">
+                {{ $slot }}
+            </main>
+            <footer class="py-4 text-center text-xs text-gray-400">
+                Powered by TaGzxia.
+            </footer>
         </div>
     </body>
     <!-- Scripts -->

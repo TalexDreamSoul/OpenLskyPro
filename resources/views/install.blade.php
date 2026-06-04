@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Lsky Pro 安装程序</title>
+    <title>OpenLskyPro 安装程序</title>
 
     <!-- Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
@@ -21,7 +21,7 @@
 <div class="min-h-screen text-gray-900 bg-gray-100">
     <div class="min-h-screen flex justify-center items-center px-6 py-10 md:py-20">
         <div class="md:w-[600px]">
-            <h1 class="text-gray-700 text-3xl">Install Lsky Pro</h1>
+            <h1 class="text-gray-700 text-3xl">Install OpenLskyPro</h1>
             <div id="checking" class="mt-4 p-6 rounded-md bg-white w-full">
                 <p class="text-md mb-4 block text-center">Step 1 > 运行环境检测</p>
 
@@ -120,9 +120,9 @@
                 <p class="mt-4 text-lg">程序安装完成。</p>
                 <div class="mt-3 space-y-1 text-gray-600">
                     <p>你可以点击 <a class="text-green-500" href="{{ route('/') }}">这里</a> 去首页。</p>
-                    <p>更多帮助请访问 <a class="text-green-500" href="https://www.lsky.pro" target="_blank">https://www.lsky.pro</a>。</p>
-                    <p>使用过程中出现任何问题请务必阅读 <a class="text-green-500" href="https://docs.lsky.pro" target="_blank">官方文档</a>。</p>
-                    <p>如果你觉得兰空图床给你带来帮助，不妨请我喝一杯咖啡☕️  <a class="text-green-500" href="https://github.com/wisp-x/lsky-pro#-%E6%8D%90%E8%B5%A0" target="_blank">去打赏</a>。</p>
+                    <p>更多帮助请访问 <a class="text-green-500" href="#" target="_blank">#</a>。</p>
+                    <p>使用过程中出现任何问题请务必阅读 <a class="text-green-500" href="#" target="_blank">官方文档</a>。</p>
+                    <p>如果你觉得OpenLskyPro给你带来帮助，不妨请我喝一杯咖啡☕️  <a class="text-green-500" href="https://github.com/wisp-x/lsky-pro#-%E6%8D%90%E8%B5%A0" target="_blank">去打赏</a>。</p>
                     <p>这个页面将在下次访问时返回 404 错误，如果你想要重新安装，请删除程序根目录中的 installed.lock 文件，然后重新访问首页。</p>
                 </div>
             </div>

@@ -78,14 +78,17 @@
             @endif
         </div>
 
-        <div id="capacity-progress" class="flex flex-col space-y-2 mb-5 px-5 w-full mt-10">
-            <p class="text-gray-700 text-sm">容量使用</p>
-            <progress class="w-full h-1.5" value="{{ Auth::user()->use_capacity }}" max="{{ Auth::user()->capacity }}"></progress>
-            <p class="text-gray-700 text-sm truncate">
-                <span class="used">{{ \App\Utils::formatSize(Auth::user()->use_capacity * 1024) }}</span>
-                /
-                <span class="total">{{ \App\Utils::formatSize(Auth::user()->capacity * 1024) }}</span>
-            </p>
+        <div class="flex flex-col space-y-4 mb-5 px-5 w-full mt-10">
+            <div id="capacity-progress" class="flex flex-col space-y-2">
+                <p class="text-gray-700 text-sm">容量使用</p>
+                <progress class="w-full h-1.5" value="{{ Auth::user()->use_capacity }}" max="{{ Auth::user()->capacity }}"></progress>
+                <p class="text-gray-700 text-sm truncate">
+                    <span class="used">{{ \App\Utils::formatSize(Auth::user()->use_capacity * 1024) }}</span>
+                    /
+                    <span class="total">{{ \App\Utils::formatSize(Auth::user()->capacity * 1024) }}</span>
+                </p>
+            </div>
+            <p class="text-gray-400 text-xs">Powered by TaGzxia.</p>
         </div>
     </div>
 </nav>
