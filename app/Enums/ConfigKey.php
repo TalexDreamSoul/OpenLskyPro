@@ -43,6 +43,9 @@ final class ConfigKey
     /** @var string 邮件配置 */
     const Mail = 'mail';
 
+    /** @var string Casdoor OIDC 配置 */
+    const Casdoor = 'casdoor';
+
     /** @var string 角色组默认配置 */
     const Group = 'group';
 }

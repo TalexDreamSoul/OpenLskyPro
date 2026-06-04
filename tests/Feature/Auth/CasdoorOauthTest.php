@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use App\Services\CasdoorOidcService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
@@ -16,13 +17,51 @@ class CasdoorOauthTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_login_page_shows_casdoor_button_when_enabled()
+    public function test_login_page_shows_casdoor_button_when_enabled_in_admin_settings()
+    {
+        $this->saveCasdoorSettings(['enabled' => true]);
+
+        $this->get('/login')
+            ->assertStatus(200)
+            ->assertSee('使用 Casdoor 登录');
+    }
+
+    public function test_env_casdoor_flag_no_longer_enables_login_button()
     {
         config(['services.casdoor.enabled' => true]);
 
         $this->get('/login')
             ->assertStatus(200)
-            ->assertSee('使用 Casdoor 登录');
+            ->assertDontSee('使用 Casdoor 登录');
+    }
+
+    public function test_admin_can_save_casdoor_oidc_settings()
+    {
+        $admin = User::factory()->create(['is_adminer' => true]);
+
+        $this->actingAs($admin)->put(route('admin.settings.save'), [
+            'casdoor' => [
+                'enabled' => '1',
+                'issuer' => 'https://casdoor.example.com',
+                'client_id' => 'client-id',
+                'client_secret' => 'client-secret',
+                'redirect' => 'https://open.example.com/auth/casdoor/callback',
+                'scope' => 'openid profile email',
+                'pending_ttl' => '15',
+            ],
+        ])->assertOk()
+            ->assertJson(['status' => true]);
+
+        $this->assertDatabaseHas('configs', [
+            'name' => ConfigKey::Casdoor,
+        ]);
+
+        $settings = json_decode(Config::query()->where('name', ConfigKey::Casdoor)->value('value'), true);
+        $this->assertSame('1', $settings['enabled']);
+        $this->assertSame('https://casdoor.example.com', $settings['issuer']);
+        $this->assertSame('client-id', $settings['client_id']);
+        $this->assertSame('client-secret', $settings['client_secret']);
+        $this->assertSame('https://open.example.com/auth/casdoor/callback', $settings['redirect']);
     }
 
     public function test_bound_casdoor_identity_can_login_directly()
@@ -65,7 +104,7 @@ class CasdoorOauthTest extends TestCase
 
     public function test_casdoor_confirm_page_shows_create_and_bind_options()
     {
-        config(['services.casdoor.enabled' => true]);
+        $this->saveCasdoorSettings(['enabled' => true]);
         session([CasdoorOidcService::SESSION_PENDING => array_merge($this->verifiedIdentity(), [
             'expires_at' => now()->addMinutes(10)->timestamp,
         ])]);
@@ -191,6 +230,27 @@ class CasdoorOauthTest extends TestCase
         Config::query()->where('name', ConfigKey::IsEnableRegistration)->update([
             'value' => $enabled ? 1 : 0,
         ]);
+        cache()->forget('configs');
+    }
+
+    private function saveCasdoorSettings(array $overrides = []): void
+    {
+        DB::table('configs')->updateOrInsert(
+            ['name' => ConfigKey::Casdoor],
+            [
+                'value' => json_encode(array_merge([
+                    'enabled' => false,
+                    'issuer' => 'https://casdoor.example.com',
+                    'client_id' => 'client-id',
+                    'client_secret' => 'client-secret',
+                    'redirect' => 'https://open.example.com/auth/casdoor/callback',
+                    'scope' => 'openid profile email',
+                    'pending_ttl' => 10,
+                ], $overrides), JSON_UNESCAPED_UNICODE),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
         cache()->forget('configs');
     }
 }

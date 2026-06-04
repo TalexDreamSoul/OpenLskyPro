@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Enums\ConfigKey;
 use App\Models\OauthIdentity;
+use App\Utils;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
@@ -19,7 +21,7 @@ class CasdoorOidcService
 
     public function enabled(): bool
     {
-        return (bool) config('services.casdoor.enabled');
+        return (bool) $this->setting('enabled', false);
     }
 
     public function getAuthorizationUrl(): string
@@ -33,7 +35,7 @@ class CasdoorOidcService
             'client_id' => $this->clientId(),
             'redirect_uri' => $this->redirectUri(),
             'response_type' => 'code',
-            'scope' => config('services.casdoor.scope', 'openid profile email'),
+            'scope' => $this->setting('scope', 'openid profile email'),
             'state' => $state,
         ]);
     }
@@ -170,7 +172,7 @@ class CasdoorOidcService
 
     private function discovery(string $key): string
     {
-        $metadata = cache()->remember(self::DISCOVERY_CACHE_KEY, now()->addHour(), function () {
+        $metadata = cache()->remember(self::DISCOVERY_CACHE_KEY.':'.md5($this->issuer()), now()->addHour(), function () {
             $response = Http::get(rtrim($this->issuer(), '/').'/.well-known/openid-configuration');
 
             if (! $response->successful()) {
@@ -194,7 +196,7 @@ class CasdoorOidcService
         }
 
         foreach (['issuer', 'client_id', 'client_secret', 'redirect'] as $key) {
-            if (! config("services.casdoor.{$key}")) {
+            if (! $this->setting($key)) {
                 throw new RuntimeException("Casdoor 配置缺少 {$key}。");
             }
         }
@@ -207,26 +209,31 @@ class CasdoorOidcService
 
     private function issuer(): string
     {
-        return (string) config('services.casdoor.issuer');
+        return (string) $this->setting('issuer');
     }
 
     private function clientId(): string
     {
-        return (string) config('services.casdoor.client_id');
+        return (string) $this->setting('client_id');
     }
 
     private function clientSecret(): string
     {
-        return (string) config('services.casdoor.client_secret');
+        return (string) $this->setting('client_secret');
     }
 
     private function redirectUri(): string
     {
-        return (string) config('services.casdoor.redirect');
+        return (string) ($this->setting('redirect') ?: url('/auth/casdoor/callback'));
     }
 
     private function pendingTtl(): int
     {
-        return (int) config('services.casdoor.pending_ttl', 10);
+        return (int) $this->setting('pending_ttl', 10);
+    }
+
+    private function setting(string $key, mixed $default = null): mixed
+    {
+        return Utils::config(ConfigKey::Casdoor, collect(config('convention.app.'.ConfigKey::Casdoor, [])))->get($key, $default);
     }
 }

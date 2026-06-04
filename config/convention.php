@@ -43,6 +43,15 @@ return [
                 ]
             ],
         ],
+        ConfigKey::Casdoor => [
+            'enabled' => false,
+            'issuer' => '',
+            'client_id' => '',
+            'client_secret' => '',
+            'redirect' => '',
+            'scope' => 'openid profile email',
+            'pending_ttl' => 10,
+        ],
     ],
     'group' => [
         GroupConfigKey::MaximumFileSize => 5120,

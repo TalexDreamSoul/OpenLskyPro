@@ -60,6 +60,45 @@
             </div>
         </form>
 
+        <p class="mb-3 font-semibold text-lg text-gray-700">OAuth / OIDC</p>
+        <form action="{{ route('admin.settings.save') }}">
+            <div class="relative p-4 rounded-md bg-white mb-8 space-y-4 shadow-custom">
+                <x-fieldset title="启用 Casdoor 登录" faq="开启后登录页会显示 Casdoor OIDC 登录按钮。本地邮箱密码登录仍然保留。">
+                    <x-switch name="casdoor[enabled]" value="1" :checked="(bool) ($configs['casdoor']['enabled'] ?? false)" />
+                </x-fieldset>
+                <div>
+                    <label for="casdoor[issuer]" class="block text-sm font-medium text-gray-700">Issuer</label>
+                    <x-input type="url" name="casdoor[issuer]" id="casdoor[issuer]" value="{{ $configs['casdoor']['issuer'] ?? '' }}" placeholder="例如：https://casdoor.example.com"/>
+                    <p class="text-xs text-gray-400 mt-1">不需要填写 /.well-known/openid-configuration，系统会自动发现 OIDC metadata。</p>
+                </div>
+                <div>
+                    <label for="casdoor[client_id]" class="block text-sm font-medium text-gray-700">Client ID</label>
+                    <x-input type="text" name="casdoor[client_id]" id="casdoor[client_id]" value="{{ $configs['casdoor']['client_id'] ?? '' }}" placeholder="请输入 Casdoor 应用 Client ID"/>
+                </div>
+                <div>
+                    <label for="casdoor[client_secret]" class="block text-sm font-medium text-gray-700">Client Secret</label>
+                    <x-input type="password" name="casdoor[client_secret]" id="casdoor[client_secret]" value="{{ $configs['casdoor']['client_secret'] ?? '' }}" placeholder="请输入 Casdoor 应用 Client Secret"/>
+                </div>
+                <div>
+                    <label for="casdoor[redirect]" class="block text-sm font-medium text-gray-700">Redirect URI</label>
+                    <x-input type="url" name="casdoor[redirect]" id="casdoor[redirect]" value="{{ $configs['casdoor']['redirect'] ?? url('/auth/casdoor/callback') }}" placeholder="{{ url('/auth/casdoor/callback') }}"/>
+                    <p class="text-xs text-gray-400 mt-1">请把这个地址加入 Casdoor 应用的 Redirect URLs。</p>
+                </div>
+                <div>
+                    <label for="casdoor[scope]" class="block text-sm font-medium text-gray-700">Scope</label>
+                    <x-input type="text" name="casdoor[scope]" id="casdoor[scope]" value="{{ $configs['casdoor']['scope'] ?? 'openid profile email' }}" placeholder="openid profile email"/>
+                </div>
+                <div>
+                    <label for="casdoor[pending_ttl]" class="block text-sm font-medium text-gray-700">绑定/创建状态有效期(分钟)</label>
+                    <x-input type="number" name="casdoor[pending_ttl]" id="casdoor[pending_ttl]" min="1" value="{{ $configs['casdoor']['pending_ttl'] ?? 10 }}" placeholder="10"/>
+                </div>
+
+                <div class="text-right">
+                    <x-button type="submit">保存更改</x-button>
+                </div>
+            </div>
+        </form>
+
         <p class="mb-3 font-semibold text-lg text-gray-700">用户</p>
         <form action="{{ route('admin.settings.save') }}">
             <div class="relative p-4 rounded-md bg-white mb-8 space-y-4 shadow-custom">

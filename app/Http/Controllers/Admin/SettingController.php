@@ -5,12 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\ConfigKey;
 use App\Http\Controllers\Controller;
 use App\Mail\Test;
-use App\Models\Config;
 use App\Services\UpgradeService;
 use App\Utils;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
@@ -25,7 +25,14 @@ class SettingController extends Controller
     public function save(Request $request): Response
     {
         foreach ($request->all() as $key => $value) {
-            Config::query()->where('name', $key)->update(['value' => $value]);
+            DB::table('configs')->updateOrInsert(
+                ['name' => $key],
+                [
+                    'value' => is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE) : $value,
+                    'updated_at' => now(),
+                    'created_at' => now(),
+                ]
+            );
         }
         Cache::flush();
         return $this->success('保存成功');

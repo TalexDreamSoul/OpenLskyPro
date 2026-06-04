@@ -63,6 +63,12 @@ class Utils
                     case ConfigKey::Group:
                         $value = collect(json_decode($value, true));
                         break;
+                    case ConfigKey::Casdoor:
+                        $casdoor = json_decode($value, true) ?: [];
+                        $casdoor['enabled'] = filter_var(data_get($casdoor, 'enabled', false), FILTER_VALIDATE_BOOLEAN);
+                        $casdoor['pending_ttl'] = (int) data_get($casdoor, 'pending_ttl', 10);
+                        $value = collect($casdoor);
+                        break;
                     case ConfigKey::UserInitialCapacity:
                         $value = sprintf('%.2f', $value);
                         break;

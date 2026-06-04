@@ -30,14 +30,5 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-    'casdoor' => [
-        'enabled' => filter_var(env('CASDOOR_ENABLED', false), FILTER_VALIDATE_BOOLEAN),
-        'issuer' => env('CASDOOR_ISSUER'),
-        'client_id' => env('CASDOOR_CLIENT_ID'),
-        'client_secret' => env('CASDOOR_CLIENT_SECRET'),
-        'redirect' => env('CASDOOR_REDIRECT_URI', env('APP_URL').'/auth/casdoor/callback'),
-        'scope' => env('CASDOOR_SCOPE', 'openid profile email'),
-        'pending_ttl' => env('CASDOOR_PENDING_TTL', 10),
-    ],
 
 ];
